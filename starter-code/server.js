@@ -131,7 +131,7 @@ app.put('/articles/:id', function(request, response) {
   function queryTwo(author_id) {
     client.query(
       // DONE: In a sentence or two, describe how a SQL 'UPDATE' is different from an 'INSERT', and identify which REST verbs and which CRUD components align with them.
-      //SQL UPDATE is an update of CRUD while INSERT is a create of CRUD. UPDATE is post while INSERT is post in REST verbs
+      //SQL UPDATE is an update of CRUD while INSERT is a create of CRUD. UPDATE is put/patch while INSERT is post in REST verbs
       `UPDATE authors
       SET author=$1, "authorUrl"=$2
       WHERE author_id=$3;`, // DONE: Write a SQL query to update an existing author record
