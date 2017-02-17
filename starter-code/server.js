@@ -9,7 +9,7 @@ const app = express();
 // DONE: Don't forget to set your own conString if required by your system
 const conString = 'postgres://localhost:5432';
 // DONE: Using a sentence or two, describe what is happening in Line 13.
-// We are declaring client as a constant variable and its taking the entry point/port(conString) to make a way to connect between the database and the server. Line 14 is actually making that connection.
+// We are declaring client as a constant(immutable) variable and its taking the entry point/port(conString) to make a way to connect between the database and the server. Line 14 is actually making that connection. Into it we are assigning an object that is a new instance of the library 'pg' that will facilitate our communications and data transfer between the server(controller) and the database(model). The conString specifies the port over which this exchange between the controller and the model will take place. Tells pg use this protocol.
 const client = new pg.Client(conString);
 client.connect();
 
@@ -32,7 +32,7 @@ app.get('/new', function(request, response) {
 app.get('/articles', function(request, response) {
   // REVIEW: We now have two queries which create separate tables in our DB, and reference the authors in our articles.
   // DONE: What number in the full-stack diagram best matches what is happening in lines 36-44? 3
-  // Put your response here...
+  // 3: the controller sends a SQL query to the model
   client.query(`
     CREATE TABLE IF NOT EXISTS
     authors (
@@ -53,10 +53,10 @@ app.get('/articles', function(request, response) {
     );`
   ) // DONE: Referring to lines 45-52, answer the following questions:
     // What is a primary key?
-    // Field in a table which uniquely identifies row/record in DB. Must contain unique values.
+    // Field in a table which uniquely identifies row/record in DB. Must contain unique values. article_id. Unique identifier for each record in a table.
     // +++++++++++++++++++++
     // What does VARCHAR mean?
-    // Character varying. Character string of variable length, value between the parenthesis is the maximum length.
+    // Character varying. Character string of variable length, value between the parenthesis is the maximum length. String datatype for sql.
     // +++++++++++++++++++++
   // REVIEW: This query will join the data together from our tables and send it back to the client.
   client.query(`
@@ -71,7 +71,7 @@ app.get('/articles', function(request, response) {
 });
 
 // DONE: How is a 'post' route different than a 'get' route?
-// Post route is different fron the get route beause 'post' will create while 'get' will read.
+// Post route is different fron the get route beause 'post' will create while 'get' will read/retrieve.
 app.post('/articles', function(request, response) {
   client.query(
     'INSERT INTO authors(author, "authorUrl") VALUES($1, $2) ON CONFLICT DO NOTHING', // DONE: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING
@@ -85,7 +85,7 @@ app.post('/articles', function(request, response) {
   function queryTwo() {
     client.query(
       // DONE: What is the purpose of the $1 in the following line of code?
-      // The $1 is for a template literal place holder and it refers to the request.body.author
+      // The $1 is for a place holder and it refers to the request.body.author
       `SELECT author_id FROM authors WHERE author=$1`, // DONE: Write a SQL query to retrieve the author_id from the authors table for the new article
       [request.body.author], // DONE: Add the author name as data for the SQL query
       function(err, result) {
@@ -96,7 +96,7 @@ app.post('/articles', function(request, response) {
   }
 
   function queryThree(author_id) {
-      // DONE: What number in the full-stack diagram best matches what is happening in line 100? 3
+      // DONE: What number in the full-stack diagram best matches what is happening in line 100? 3: the controller(server) is dispatching a query to the model
     client.query(
       `INSERT INTO
       articles(author_id, title, category, "publishedOn", body)
@@ -110,7 +110,7 @@ app.post('/articles', function(request, response) {
       ], // DONE: Add the data from our new article, including the author_id, as data for the SQL query.
       function(err) {
         if (err) console.error(err);
-        // DONE: What number in the full-stack diagram best matches what is happening in line 114? 5
+        // DONE: What number in the full-stack diagram best matches what is happening in line 114? 5: The controller(server) is sending information back to the view
         response.send('insert complete');
       }
     );
@@ -131,7 +131,7 @@ app.put('/articles/:id', function(request, response) {
   function queryTwo(author_id) {
     client.query(
       // DONE: In a sentence or two, describe how a SQL 'UPDATE' is different from an 'INSERT', and identify which REST verbs and which CRUD components align with them.
-      //SQL UPDATE is an update of CRUD while INSERT is a create of CRUD. UPDATE is post while INSERT is post in REST verbs
+      //SQL UPDATE is an update of CRUD while INSERT is a create of CRUD. UPDATE is put/patch while INSERT is post in REST verbs. UPDATE modifys an existing record. INSERT creates a new record
       `UPDATE authors
       SET author=$1, "authorUrl"=$2
       WHERE author_id=$3;`, // DONE: Write a SQL query to update an existing author record
