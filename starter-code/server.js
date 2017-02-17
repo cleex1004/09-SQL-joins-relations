@@ -160,16 +160,16 @@ app.put('/articles/:id', function(request, response) {
   }
 });
 
-  // DONE: What number in the full-stack diagram best matches what is happening in line 164? 2
+  // DONE: What number in the full-stack diagram best matches what is happening in line 164? 2: a request from the view(an event) is directed to the appropriate route in the server(the listener invokes the appropriate handler)
 app.delete('/articles/:id', function(request, response) {
-    // DONE: What number in the full-stack diagram best matches what is happening in lines 165? 3
+    // DONE: What number in the full-stack diagram best matches what is happening in lines 165? 3: the giving a shout to the model
   client.query(
     `DELETE FROM articles WHERE article_id=$1;`,
     // DONE: What does the value in 'request.params.id' come from? If unsure, look in the Express docs.
-    // The value comes from the parameters of the request route. Dot notation, the id of the parameters of the request.
+    // The value comes from the parameters of the request route. Dot notation, the id of the parameters of the request. It comes from the ':id:' in the URL of the ajax request, which in this case was sent out by the Article.prototype.deleteRecord(), an it becomes the $1 that is sent off to the database up above
     [request.params.id]
   );
-  // DONE: What number in the full-stack diagram best matches what is happening in line 171? 5
+  // DONE: What number in the full-stack diagram best matches what is happening in line 173? 5
   response.send('Delete complete');
 });
 
